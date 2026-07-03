@@ -1,0 +1,22 @@
+# Databricks App Configuration File
+# Documentation: https://docs.databricks.com/apps
+
+command:
+  - "streamlit"
+  - "run"
+  - "app.py"
+  - "--server.address=0.0.0.0"
+
+# Pre-defined non-sensitive environment variables for Databricks Apps deployment
+# Sensitive secrets (like GEMINI_API_KEY) should be configured in the Databricks App UI Settings page.
+env:
+  - name: DATABRICKS_SERVER_HOSTNAME
+    value: "dbc-3feed288-7045.cloud.databricks.com"
+  - name: DATABRICKS_HTTP_PATH
+    value: "/sql/1.0/warehouses/a604609a79d4d876"
+  - name: DATABRICKS_CATALOG
+    value: "pm_test1"
+  - name: DATABRICKS_SCHEMA
+    value: "pm_test1_schema"
+  - name: DATABRICKS_TABLE
+    value: "business_case_intake"
