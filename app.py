@@ -583,6 +583,11 @@ def initiate_priority_and_save(payload):
     agent_input = {
         "project_name": payload["project_name"],
         "problem_solving": payload["problem_solving"],
+        "who_impacted": payload["who_impacted"],
+        "cost_impact": payload["cost_impact"],
+        "other_details": payload["other_details"],
+        "value_creation": payload["value_creation"],
+        "kpis_json": json.dumps(payload["kpis"]),
         "impact_revenue": payload["impact_revenue"],
         "impact_cost": payload["impact_cost"],
         "impact_cust_service": payload["impact_cust_service"],
