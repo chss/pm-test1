@@ -324,6 +324,17 @@ def reset_form():
     st.session_state.impact_efficiency = "No impact"
     st.session_state.impact_duration = "No impact"
     st.session_state.impact_quality = "No impact"
+    
+    # Reset corresponding radio widget keys to ensure instant visual reset in Streamlit
+    st.session_state.impact_rev_radio = "No Impact"
+    st.session_state.impact_cost_radio = "No Impact"
+    st.session_state.impact_cs_radio = "No impact"
+    st.session_state.impact_eff_radio = "No impact"
+    st.session_state.impact_dur_radio = "No impact"
+    st.session_state.impact_q_radio = "No impact"
+    
+    # Clear previous chat assistant history
+    st.session_state.copilot_messages = []
 
 # Title header block
 st.markdown('<div class="main-title">Business Case Intake Portal</div>', unsafe_allow_html=True)
