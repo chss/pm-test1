@@ -571,6 +571,7 @@ def initiate_priority_and_save(payload):
     # Compile inputs for Priority Agent graph schema
     agent_input = {
         "project_name": payload["project_name"],
+        "problem_solving": payload["problem_solving"],
         "impact_revenue": payload["impact_revenue"],
         "impact_cost": payload["impact_cost"],
         "impact_cust_service": payload["impact_cust_service"],
@@ -587,11 +588,16 @@ def initiate_priority_and_save(payload):
                 if part.function_call and part.function_call.name == "adk_request_input":
                     interrupt_id = part.function_call.args.get("interruptId")
                     msg = part.function_call.args.get("message")
-                    calc_priority = msg.split(":")[-1]
+                    
+                    # Split message: calculated_priority:{priority}:{reason}
+                    parts = msg.split(":")
+                    calc_priority = parts[1] if len(parts) > 1 else msg
+                    explanation = parts[2] if len(parts) > 2 else "Standard business impact calculation."
                     
                     # Store confirmation request in session state
                     st.session_state.pending_priority_confirmation = {
                         "calculated_priority": calc_priority,
+                        "explanation": explanation,
                         "invocation_id": event.invocation_id,
                         "payload": payload
                     }
@@ -986,12 +992,24 @@ if st.session_state.pending_priority_confirmation is not None:
     conf = st.session_state.pending_priority_confirmation
     calc_priority = conf["calculated_priority"]
     
+    explanation = conf.get("explanation", "Standard business impact calculation.")
+    
+    # Render styles based on automatic patient harm risk classification
+    if "Automatically qualified" in explanation or "Automatically assigned" in explanation:
+        alert_style = "background-color: #ecfdf5; border-left: 5px solid #10b981; color: #065f46;"
+        alert_title = "🛡️ Automatic Risk Classification Applied"
+    else:
+        alert_style = "background-color: #fef3c7; border-left: 5px solid #d97706; color: #78350f;"
+        alert_title = "⚡ Priority Agent Review Required"
+        
     st.markdown(f"""
-    <div style="background-color: #fef3c7; border-left: 5px solid #d97706; padding: 20px; border-radius: 8px; margin-bottom: 25px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
-        <h3 style="color: #92400e; margin: 0 0 10px 0; font-weight: 700;">⚡ Priority Agent Review Required</h3>
-        <p style="color: #78350f; font-size: 16px; margin: 0 0 15px 0; line-height: 1.5;">
-            The Priority Agent has calculated a priority assignment of <b>Priority {calc_priority}</b> for project <b>"{st.session_state.project_name or 'Draft'}"</b>. 
-            Please review, choose whether to keep it or override, and click confirm to save to Databricks.
+    <div style="{alert_style} padding: 20px; border-radius: 8px; margin-bottom: 25px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+        <h3 style="margin: 0 0 10px 0; font-weight: 700;">{alert_title}</h3>
+        <p style="font-size: 16px; margin: 0 0 10px 0; line-height: 1.5;">
+            The Priority Agent has calculated a priority assignment of <b>Priority {calc_priority}</b> for project <b>"{st.session_state.project_name or 'Draft'}"</b>.
+        </p>
+        <p style="font-size: 15px; margin: 0; font-style: italic; font-weight: 600; line-height: 1.4; opacity: 0.95;">
+            Reason: {explanation}
         </p>
     </div>
     """, unsafe_allow_html=True)
