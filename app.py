@@ -247,6 +247,11 @@ if "db_table" not in st.session_state:
 # Copilot configuration & chat history
 if "gemini_api_key" not in st.session_state:
     st.session_state.gemini_api_key = os.getenv("GEMINI_API_KEY", "")
+
+# Sync session state to environment variable so ADK workflows can access it
+if st.session_state.gemini_api_key:
+    os.environ["GEMINI_API_KEY"] = st.session_state.gemini_api_key.strip()
+
 if "copilot_messages" not in st.session_state:
     st.session_state.copilot_messages = []
 
@@ -559,6 +564,10 @@ def run_priority_workflow_sync(project_data, user_response=None, invocation_id=N
         loop.close()
 
 def initiate_priority_and_save(payload):
+    # Sync session state to environment variable so ADK workflows can access it
+    if "gemini_api_key" in st.session_state and st.session_state.gemini_api_key:
+        os.environ["GEMINI_API_KEY"] = st.session_state.gemini_api_key.strip()
+        
     # Sanitize optional text fields to "Not Applicable" if empty
     sanitize_empty_fields()
     
