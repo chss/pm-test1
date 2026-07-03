@@ -28,8 +28,9 @@ The application is built on a 3-tier decoupled architecture combining a responsi
 graph TD
     User([User]) -->|1. Enters Form Data| UI[Streamlit Frontend]
     UI -->|2. Clicks Save / Submit| PA[Priority Agent Graph - ADK 2.0]
-    PA -->|3. Node Calculation| Rules{Priority Rules}
-    Rules -->|Priority A/B/C| HITL[RequestInput Interrupt]
+    PA -->|3. Invoke Gemini Semantic Engine| Gemini[Gemini 2.5 Flash API]
+    Gemini -->|Calculated Priority & Discrepancies| PA
+    PA -->|Priority A/B/C + Risk Matrix| HITL[RequestInput Interrupt]
     HITL -->|4. Yields Interrupt to UI| UI
     User -->|5. Confirms / Overrides Priority| UI
     UI -->|6. Resumes Workflow with Input| PA
@@ -51,23 +52,29 @@ graph TD
 The user enters qualitative details across three structured tabs:
 * **Problem Statement**: Standardizes project definition, stakeholder analysis, and status-quo cost calculations.
 * **Value and KPIs**: Focuses on value creation linkage and allows the user to dynamically add, remove, and track metrics.
-* **Business Impact**: Collects strategic alignment vectors (Revenue, Cost, Customer Service, Process Efficiency, Process Duration, and Quality).
+* **Business Impact**: Collects strategic alignment vectors (Revenue, Cost, Customer Experience, Process Efficiency, Process Duration, and Quality).
 
 ### The Priority Agent Graph (ADK 2.0 Workflow)
-The Priority Agent runs as an ADK 2.0 Graph Workflow consisting of a custom function node wired to the `START` entry point. It evaluates impact choices against business logic:
+The Priority Agent runs as an ADK 2.0 Graph Workflow consisting of a custom function node wired to the `START` entry point. It runs a **Gemini LLM Semantic Analyzer** on every submission to perform a deep compliance risk assessment and sanity check.
 
-| Rule Category | Condition | Assigned Priority |
-| :--- | :--- | :--- |
-| **Rule A** | Revenue = `Increase` **AND** Cost = `Saving` | **Priority A** |
-| **Rule B** | Customer Experience = `External` **OR** Quality = `Product` | **Priority B** |
-| **Rule C** | Any other combination of strategic inputs | **Priority C** |
+#### 1. Regulatory Risk & Quality Assessment
+The agent evaluates the combined text fields against **5 High-Risk Categories** (aligned with ISO 14971 and FDA 21 CFR Part 820 QSR):
+* **Intended Use & Classification**: Detects life-sustaining, implantable, or automated therapeutic decision-making functions (High severity -> Priority A).
+* **Software & AI (SaMD/SiMD)**: Detects software code, AI/ML models, cloud connectivity, or cybersecurity vulnerabilities (Medium severity -> Priority B).
+* **Materials & Biocompatibility**: Detects body contact, sterilization needs, or novel materials (Medium severity -> Priority B).
+* **Clinical Data & Human Factors**: Detects complex clinical trials or human-error usability risks (Medium severity -> Priority B).
+* **Design & Manufacturing Complexity**: Detects 3D printing, complex supply chains, or failure-prone components (Medium severity -> Priority B).
+* **Direct Patient Safety**: Detects safety hazards, patient harm, or clinical risks (High severity -> Priority A).
 
-### Human-in-the-Loop (HITL) Integration
-Instead of saving calculations directly, the system includes a human confirmation step:
-1. The agent yields `RequestInput` with the computed priority.
-2. The workflow pauses and generates a unique `invocation_id`.
-3. The Streamlit frontend intercepts this interrupt, rendering a review panel prompting the user to keep the assignment or choose an override (*A, B, or C*).
-4. The user's selection is returned to the runner. The workflow resumes, logs the decision, and returns the final priority to the frontend to complete the database insert.
+Findings are rendered in a structured Markdown **Risk Matrix** mapping risks to standards (e.g. 21 CFR 820.30 Design Controls, 21 CFR 820.100 CAPA, 21 CFR 820.70 Production Controls, ISO 14971, IEC 62304).
+
+#### 2. Business Impact Rules & Discrepancy Checks
+The agent checks the business alignment radio selections:
+* **Priority A**: Quality Assurance = `Product` OR Revenue = `Increase` OR Cost = `Saving`.
+* **Priority B**: Customer Experience = `External`.
+* **Priority C**: Everything else.
+
+**Sanity Check Mismatch**: The LLM compares the text descriptions against your radio selections. If the description mentions a product quality revision or cost savings, but you selected "No impact" on the radios, the agent flags this discrepancy, warns the user, and auto-promotes the recommendation to the higher priority.
 
 ---
 
@@ -99,7 +106,6 @@ All submissions are stored in the catalog `pm_test1`, schema `pm_test1_schema`, 
 
 The current implementation provides a foundation that can be expanded with the following enhancements:
 
-* **Predictive Priority Classification (LLM-as-a-Node)**: Integrate a Gemini node in the ADK workflow to analyze raw text fields (e.g., Problem Description and Value Creation) and suggest priority classifications, complementing the rule-based approach.
 * **Auto-Generated Financial Estimates**: Use LLMs to parse text inputs and estimate financial metrics, such as Return on Investment (ROI) or Net Present Value (NPV).
 * **Multi-Stage Workflow Approvals**: Extend the graph with multiple `RequestInput` nodes to route priority reviews to managers and finance directors based on estimated budget thresholds.
 * **System Integrations**: Set up webhooks or event loops to automatically sync approved entries to task management tools like Jira or ServiceNow.

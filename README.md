@@ -1,6 +1,8 @@
 # Enterprise Business Case Intake Portal 💼
 
-A premium, interactive multi-tab Streamlit web application designed to help teams structure, evaluate, and classify new business cases, KPIs, and corporate impact vectors.
+A premium, interactive multi-tab Streamlit web application designed to help teams structure, evaluate, and classify new business cases, KPIs, and corporate impact vectors. 
+
+The application is tailored for **Medical Device Manufacturers** and integrates agentic compliance/safety checks aligned with **FDA 21 CFR Part 820** and **ISO 14971**.
 
 ---
 
@@ -18,30 +20,38 @@ A premium, interactive multi-tab Streamlit web application designed to help team
 
 - **📊 Tab 3: Business Impact**
   - Standardized radio selectors to classify outcomes against key corporate dimensions:
-    - **Revenue** (*No Impact, Protection, Increase*)
-    - **Cost** (*No Impact, Avoidance, Saving*)
+    - **Revenue Influence** (*No Impact, Protection, Increase*)
+    - **Cost Reduction** (*No Impact, Avoidance, Saving*)
     - **Customer Experience** (*No impact, External, Internal*)
-    - **Process Efficiency** (*No impact, Improvement*)
-    - **Process Duration** (*No impact, Reduction*)
-    - **Quality** (*No impact, Data, Product*)
+    - **Quality Assurance** (*No impact, Data, Product*)
 
-- **🎛️ Console Panel (Sidebar)**
-  - **Dynamic Progress Bar**: Live completion tracking for required fields.
-  - **Executive Preview**: Real-time summary showing current business impacts and total KPIs defined.
-  - **Demo Data Injector**: Click "Load Demo" to immediately fill the form with a mock business case (*Smart Inventory Optimization Engine*) for quick testing.
-  - **Export Formats**: One-click downloads for compiled data as a structured **JSON** file or flat **CSV** spreadsheet.
+- **🤖 Tab 4: AI Copilot Assistant**
+  - Live chat assistant that acts as a form completion coach.
+  - Directly reads the live state of your input fields to suggest edits, draft KPIs, or clarify regulatory requirements.
 
-- **🎨 Premium Visuals & Styling**
-  - Out-of-the-box custom slate & indigo glassmorphism theme styling.
-  - Beautiful typographic hierarchy powered by Google's *Outfit* font.
-  - Micro-animations and responsive layouts.
+- **🛡️ Tab 5: Priority Agent (ADK 2.0 Graph Workflow)**
+  - Runs a structured **Gemini LLM Semantic Analysis** on every submission.
+  - **Regulatory Safety Check**: Automatically reviews all fields for compliance, quality, or patient harm safety risks, mapping findings to **FDA 21 CFR Part 820** sections (e.g. Design Controls, Production Controls, CAPA) and international standards (e.g., ISO 14971, IEC 62304, ISO 10993).
+  - **Discrepancy Sanity Check**: Compares your text inputs with Tab 3 radio selections. If you describe a high-impact initiative (like product QA or external customer service) but select "No impact" on the radios, the agent flags the discrepancy, issues a warning, and promotes the project to the higher recommended priority level.
+
+---
+
+## 🚦 Priority Logic Mapping
+
+The final recommended priority is determined as the maximum of:
+1. **Risk Severity**: High Risk/Safety -> **Priority A**; Medium Risk -> **Priority B**; Low/None -> **Priority C**.
+2. **Business Impact Selection**:
+   * **Priority A**: Quality Assurance = *Product*, Revenue = *Increase*, **OR** Cost = *Saving*.
+   * **Priority B**: Customer Experience = *External*.
+   * **Priority C**: Everything else.
+3. **Text-Detected Business Targets (Sanity Promotion)**: If text descriptions mention product quality, revenue gains, cost savings, or customer service, they are mapped to their respective higher priorities (A or B) and warning notices are generated.
 
 ---
 
 ## 🚀 Getting Started
 
 ### 📋 Prerequisites
-Make sure you have Python 3.8+ installed.
+Make sure you have Python 3.11+ installed.
 
 ### ⚙️ Installation
 1. Clone the repository:
@@ -60,4 +70,4 @@ Launch the Streamlit web application:
 ```bash
 streamlit run app.py
 ```
-The application will open in your default browser at `http://localhost:8501`.
+The application will open in your default browser at `http://localhost:8501`. Configure your **Gemini API Key** in the sidebar's integration settings to enable the Copilot and Priority Agent.
