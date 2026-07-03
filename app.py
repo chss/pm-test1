@@ -606,7 +606,7 @@ def initiate_priority_and_save(payload):
                     msg = part.function_call.args.get("message")
                     
                     # Split message: calculated_priority:{priority}:{reason}
-                    parts = msg.split(":")
+                    parts = msg.split(":", 2)
                     calc_priority = parts[1] if len(parts) > 1 else msg
                     explanation = parts[2] if len(parts) > 2 else "Standard business impact calculation."
                     
@@ -1019,16 +1019,17 @@ if st.session_state.pending_priority_confirmation is not None:
         alert_title = "⚡ Priority Agent Review Required"
         
     st.markdown(f"""
-    <div style="{alert_style} padding: 20px; border-radius: 8px; margin-bottom: 25px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+    <div style="{alert_style} padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
         <h3 style="margin: 0 0 10px 0; font-weight: 700;">{alert_title}</h3>
-        <p style="font-size: 16px; margin: 0 0 10px 0; line-height: 1.5;">
-            The Priority Agent has calculated a priority assignment of <b>Priority {calc_priority}</b> for project <b>"{st.session_state.project_name or 'Draft'}"</b>.
-        </p>
-        <p style="font-size: 15px; margin: 0; font-style: italic; font-weight: 600; line-height: 1.4; opacity: 0.95;">
-            Reason: {explanation}
+        <p style="font-size: 16px; margin: 0; line-height: 1.5;">
+            The Priority Agent has evaluated the business case details and assigned <b>Priority {calc_priority}</b> for project <b>"{st.session_state.project_name or 'Draft'}"</b>.
         </p>
     </div>
     """, unsafe_allow_html=True)
+    
+    # Render structured Risk Summary & Risk Matrix markdown report natively
+    st.markdown(explanation)
+    st.markdown("---")
     
     override_choice = st.radio(
         "**Confirm Priority Assignment:**",
