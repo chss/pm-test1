@@ -434,9 +434,13 @@ def save_to_databricks(data):
             # Serialize KPIs to JSON string
             kpis_json = json.dumps(data["kpis"])
             
-            # Insert using parameterized SQL statement
+            # Insert using parameterized SQL statement with explicit column naming
             insert_sql = f"""
-            INSERT INTO {full_table_name} VALUES (
+            INSERT INTO {full_table_name} (
+                project_name, problem_solving, who_impacted, cost_impact, other_details,
+                value_creation, kpis, impact_revenue, impact_cost, impact_cust_service,
+                impact_efficiency, impact_duration, impact_quality, priority, submitted_at
+            ) VALUES (
                 ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, current_timestamp()
             )
             """
