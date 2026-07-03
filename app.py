@@ -1035,9 +1035,9 @@ if st.session_state.pending_priority_confirmation is not None:
         "**Confirm Priority Assignment:**",
         options=[
             f"Keep Calculated Priority ({calc_priority})",
-            "Override to A (High revenue Increase & Saving)",
-            "Override to B (External customer experience or Product quality)",
-            "Override to C (Standard priority)"
+            "Override to A (Product Quality, Revenue Increase, or Cost Saving)",
+            "Override to B (External Customer Experience)",
+            "Override to C (Everything else)"
         ],
         index=0,
         key="priority_choice_radio_main"

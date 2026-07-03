@@ -64,9 +64,9 @@ Integrates an intelligent graph-based Priority Agent workflow between form submi
   * **Priority C**: Assigned otherwise.
 - **Standard Business Rules Integration**:
   The risk priority is combined with the standard business rules priority, taking the highest classification:
-  * **Priority A**: Revenue = *Increase* AND Cost = *Saving*.
-  * **Priority B**: Customer Experience = *External* OR Quality = *Product*.
-  * **Priority C**: Default.
+  * **Priority A**: Quality = *Product* OR Revenue = *Increase* OR Cost = *Saving*.
+  * **Priority B**: Customer Experience = *External*.
+  * **Priority C**: Everything else.
 - **Structured Rationale Markdown**:
   Generates a formal, regulatory-aligned review report returned directly to the UI, consisting of:
   * `### 1. Risk Summary`: A 2-3 sentence overview of compliance or quality gaps.

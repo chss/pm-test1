@@ -190,15 +190,18 @@ async def determine_and_confirm_priority(ctx: Context, node_input: ProjectData):
         risk_priority = "B"
         
     # Standard business impact rules
+    # Priority A: Product Quality ("Product") OR Revenue Increase ("Increase") OR Cost Saving ("Saving")
+    # Priority B: External Customer Experience ("External")
+    # Priority C: Everything Else
     rev = node_input.impact_revenue
     cost = node_input.impact_cost
     cust = node_input.impact_cust_service
     qual = node_input.impact_quality
     
     business_priority = "C"
-    if rev == "Increase" and cost == "Saving":
+    if qual == "Product" or rev == "Increase" or cost == "Saving":
         business_priority = "A"
-    elif cust == "External" or qual == "Product":
+    elif cust == "External":
         business_priority = "B"
         
     # Combine evaluations: take highest priority (A > B > C)
