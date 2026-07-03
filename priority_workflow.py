@@ -51,14 +51,14 @@ async def determine_and_confirm_priority(ctx: Context, node_input: ProjectData):
     max_severity = "Low"
     risks = []
     
-    # Always run the base keyword checks
+    # Always run the base keyword checks mapped to international standards and FDA 21 CFR Part 820 Quality System Regulations
     # Category 1: Intended Use
     if has_any_match(combined_text, ["implant", "life-sustaining", "therapeutic", "critical care", "pacemaker", "ventilator"]):
         risks.append({
             "risk_area": "Intended Use & Classification",
             "specific_risk": "Description suggests life-sustaining or implantable system functions.",
             "severity": "High",
-            "applicable_standard": "FDA Class III / ISO 14971"
+            "applicable_standard": "FDA Class III / ISO 14971 / 21 CFR 820.30 (Design Controls - Risk Analysis)"
         })
         max_severity = "High"
         
@@ -68,7 +68,7 @@ async def determine_and_confirm_priority(ctx: Context, node_input: ProjectData):
             "risk_area": "Software & AI (SaMD/SiMD)",
             "specific_risk": "System involves cloud connectivity, software controls, or AI/ML algorithms.",
             "severity": "Medium",
-            "applicable_standard": "IEC 62304 / FDA SaMD Guidance"
+            "applicable_standard": "IEC 62304 / FDA SaMD Guidance / 21 CFR 820.30 (Design Controls - Software Validation)"
         })
         if max_severity != "High":
             max_severity = "Medium"
@@ -79,7 +79,7 @@ async def determine_and_confirm_priority(ctx: Context, node_input: ProjectData):
             "risk_area": "Materials & Biocompatibility",
             "specific_risk": "Mentions sterilization, body contact, or novel biomaterials.",
             "severity": "Medium",
-            "applicable_standard": "ISO 10993"
+            "applicable_standard": "ISO 10993 / 21 CFR 820.30 (Design Verification) / 21 CFR 820.50 (Purchasing Controls)"
         })
         if max_severity != "High":
             max_severity = "Medium"
@@ -90,7 +90,7 @@ async def determine_and_confirm_priority(ctx: Context, node_input: ProjectData):
             "risk_area": "Clinical Data & Human Factors",
             "specific_risk": "Requires human factors usability verification or complex clinical trials.",
             "severity": "Medium",
-            "applicable_standard": "IEC 62366"
+            "applicable_standard": "IEC 62366 / 21 CFR 820.30 (Design Validation - Usability & Human Factors)"
         })
         if max_severity != "High":
             max_severity = "Medium"
@@ -101,8 +101,8 @@ async def determine_and_confirm_priority(ctx: Context, node_input: ProjectData):
             "risk_area": "Design & Manufacturing Complexity",
             "specific_risk": "Involves complex assembly, novel fabrication methods, or failure-prone components.",
             "severity": "Medium",
-            "applicable_standard": "ISO 13485"
-            })
+            "applicable_standard": "ISO 13485 / 21 CFR 820.70 (Production and Process Controls) / 21 CFR 820.75 (Process Validation)"
+        })
         if max_severity != "High":
             max_severity = "Medium"
 
@@ -114,7 +114,7 @@ async def determine_and_confirm_priority(ctx: Context, node_input: ProjectData):
             "risk_area": "Product Compliance & Quality (Patient Safety)",
             "specific_risk": "Direct mention of patient safety risk or patient harm in intake fields.",
             "severity": "High",
-            "applicable_standard": "ISO 14971 (Risk Management)"
+            "applicable_standard": "ISO 14971 / 21 CFR 820.100 (Corrective and Preventive Action - CAPA) / 21 CFR 820.30 (Design Controls - Risk Analysis)"
         })
         max_severity = "High"
 
@@ -143,7 +143,7 @@ async def determine_and_confirm_priority(ctx: Context, node_input: ProjectData):
             - Risk Area (e.g. Intended Use & Classification, Software & AI (SaMD/SiMD), Materials & Biocompatibility, Clinical Data & Human Factors, Design & Manufacturing Complexity)
             - Specific Risk Identified (detailing what in the text suggests this risk)
             - Severity (Low, Medium, or High)
-            - Applicable Standard/Regulation (e.g., ISO 14971, FDA SaMD Guidance, ISO 10993, IEC 62366, ISO 13485)
+            - Applicable Standard/Regulation (MUST include relevant parts of FDA 21 CFR Part 820 e.g. 21 CFR 820.30 (Design Controls), 21 CFR 820.70 (Production and Process Controls), 21 CFR 820.100 (CAPA), 21 CFR 820.50 (Purchasing Controls) alongside international standards like ISO 14971, IEC 62304, ISO 10993, IEC 62366, ISO 13485)
 
             Format your output strictly as a JSON object with:
             1. "max_severity": "High" | "Medium" | "Low"

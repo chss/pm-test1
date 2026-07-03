@@ -70,7 +70,7 @@ Integrates an intelligent graph-based Priority Agent workflow between form submi
 - **Structured Rationale Markdown**:
   Generates a formal, regulatory-aligned review report returned directly to the UI, consisting of:
   * `### 1. Risk Summary`: A 2-3 sentence overview of compliance or quality gaps.
-  * `### 2. Risk Matrix`: A formatted Markdown table listing the risk areas, identified risks, severity (Low/Medium/High), and applicable standards (e.g., ISO 14971, IEC 62304, ISO 10993, IEC 62366, ISO 13485).
+  * `### 2. Risk Matrix`: A formatted Markdown table listing the risk areas, identified risks, severity (Low/Medium/High), and applicable standards (e.g., ISO 14971, IEC 62304, ISO 10993, IEC 62366, ISO 13485, and FDA 21 CFR Part 820 sections like 820.30 Design Controls or 820.100 CAPA).
 - **Human-in-the-loop (HITL) Validation**:
   - Automatically runs the workflow upon submit.
   - Pauses execution and displays the structured Markdown review report natively in the UI.
