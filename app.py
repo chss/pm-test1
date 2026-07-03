@@ -472,23 +472,27 @@ async def run_priority_workflow_async(project_data, user_response=None, invocati
     import uuid
     import json
     
-    app = App(
-        name="priority_app",
-        root_agent=priority_workflow,
-        resumability_config=ResumabilityConfig(is_resumable=True)
-    )
-    runner = InMemoryRunner(app=app)
+    if "priority_runner" not in st.session_state:
+        app = App(
+            name="priority_app",
+            root_agent=priority_workflow,
+            resumability_config=ResumabilityConfig(is_resumable=True)
+        )
+        st.session_state.priority_runner = InMemoryRunner(app=app)
+        
+    runner = st.session_state.priority_runner
     
     session_id = st.session_state.get("priority_run_session_id")
     if not session_id:
         session_id = str(uuid.uuid4())
         st.session_state.priority_run_session_id = session_id
         
-    await runner.session_service.create_session(
-        app_name=runner.app_name,
-        user_id="streamlit_user",
-        session_id=session_id
-    )
+        # Create session only for a brand new run to preserve history on subsequent resumes
+        await runner.session_service.create_session(
+            app_name=runner.app_name,
+            user_id="streamlit_user",
+            session_id=session_id
+        )
     
     if invocation_id and user_response:
         resume_msg = types.Content(role='user', parts=[
