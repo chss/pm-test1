@@ -595,8 +595,13 @@ def initiate_priority_and_save(payload):
     }
     
     with st.spinner("Invoking Priority Agent..."):
-        # Run Priority Workflow (ADK 2.0 Graph Workflow API)
-        event = run_priority_workflow_sync(agent_input)
+        try:
+            # Run Priority Workflow (ADK 2.0 Graph Workflow API)
+            event = run_priority_workflow_sync(agent_input)
+        except Exception as e:
+            st.error(f"❌ Priority Agent error: {str(e)}")
+            st.info("💡 Please verify that your Gemini API Key is configured in the sidebar settings.")
+            return
         
         is_interrupted = False
         if event and getattr(event, 'content', None) and event.content.parts:
